@@ -1,25 +1,21 @@
 """
-A simple app to create a JWT token.
+a simple app to create a jwt token
 """
+
 import os
 import logging
 import datetime
 import functools
 import jwt
-
 # pylint: disable=import-error
 from flask import Flask, jsonify, request, abort
-
 
 JWT_SECRET = os.environ.get('JWT_SECRET', 'abc123abc1234')
 LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
 
-
 def _logger():
     '''
-    Setup logger format, level, and handler.
-
-    RETURNS: log object
+    setup logger format, level, and handler
     '''
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
@@ -32,14 +28,13 @@ def _logger():
     log.addHandler(stream_handler)
     return log
 
-
 LOG = _logger()
 LOG.debug("Starting with log level: %s" % LOG_LEVEL )
 APP = Flask(__name__)
 
 def require_jwt(function):
     """
-    Decorator to check valid jwt is present.
+    decorator to check if valid jwt is present
     """
     @functools.wraps(function)
     def decorated_function(*args, **kws):
@@ -51,20 +46,20 @@ def require_jwt(function):
             jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
         except: # pylint: disable=bare-except
             abort(401)
-
         return function(*args, **kws)
     return decorated_function
 
-
 @APP.route('/', methods=['POST', 'GET'])
 def health():
+    """
+    simple health check to ensure app is working
+    """
     return jsonify("Healthy")
-
 
 @APP.route('/auth', methods=['POST'])
 def auth():
     """
-    Create JWT token based on email.
+    create jwt token based on email
     """
     request_data = request.get_json()
     email = request_data.get('email')
@@ -76,16 +71,13 @@ def auth():
         LOG.error("No password provided")
         return jsonify({"message": "Missing parameter: password"}, 400)
     body = {'email': email, 'password': password}
-
     user_data = body
-
     return jsonify(token=_get_jwt(user_data).decode('utf-8'))
-
 
 @APP.route('/contents', methods=['GET'])
 def decode_jwt():
     """
-    Check user token and return non-secret data
+    check user token and return non-secret data
     """
     if not 'Authorization' in request.headers:
         abort(401)
@@ -95,13 +87,10 @@ def decode_jwt():
         data = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
     except: # pylint: disable=bare-except
         abort(401)
-
-
     response = {'email': data['email'],
                 'exp': data['exp'],
                 'nbf': data['nbf'] }
     return jsonify(**response)
-
 
 def _get_jwt(user_data):
     exp_time = datetime.datetime.utcnow() + datetime.timedelta(weeks=2)
