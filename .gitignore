@@ -3,6 +3,7 @@
 .flaskenv
 *.pyc
 *.pyo
+tmp/
 env/
 env*
 dist/
