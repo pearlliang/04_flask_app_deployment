@@ -9,7 +9,9 @@ spec:
       targetPort: 8080
   selector:
     app: simple-jwt-api
+
 ---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
