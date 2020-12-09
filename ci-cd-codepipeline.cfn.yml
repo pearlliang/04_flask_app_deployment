@@ -123,7 +123,7 @@ Resources:
           def handler(event, context):
             response = {
               'Status': 'SUCCESS',
-              "Reason": "See the details in CloudWatch Log Stream: " + context.log_stream_name,
+              'Reason': 'See the details in CloudWatch Log Stream: ' + context.log_stream_name,
               'PhysicalResourceId': context.log_stream_name,
               'StackId': event['StackId'],
               'RequestId': event['RequestId'],
@@ -151,11 +151,11 @@ Resources:
             except Exception as e:
               print(e)
               response['Status'] = 'FAILED'
-              response["Reason"] = e
+              response['Reason'] = e
               response['Data'] = {"Message": "Resource creation failed"}
 
             response_body = json.dumps(response)
-            headers = {'content-type': '', "content-length": len(response_body) }
+            headers = {'content-type': '', 'content-length': str(len(response_body)) }
             put_response = requests.put(event['ResponseURL'], headers=headers, data=response_body)
             return response
 
