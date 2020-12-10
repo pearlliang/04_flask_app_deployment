@@ -17,7 +17,6 @@ _mailinglist
 .idea/
 docs/_build/
 __pycache__
-.env_file
 aws_info.txt
 
 # Coverage reports
